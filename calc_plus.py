@@ -3,10 +3,11 @@ import random
 import datetime
 import vlc
 
-import sys
-from PyQt5.QtCore import Qt, QTime, QTimer, QEventLoop
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap, QFont, QKeySequence
+from PyQt6.QtCore import Qt, QTime, QTimer, QEventLoop
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QPixmap, QFont, QKeySequence, QImage
+
+from constructGUI import construct
 
 ############################################
 q1_max_num = 4
@@ -42,40 +43,30 @@ class Window(QWidget):
         self.time1 = None
         
     def initUI(self):
-        
-        self.donut_pixmap = QPixmap('./sound/star.png')
-        self.num_pixmap = [QPixmap('./sound/%d.png'%i) for i in range(10)]
-        self.plus_pixmap = QPixmap('./sound/plus.png')
+
         ### header ###
         top = QFrame()
-        top.setFrameShape(QFrame.StyledPanel)
         header_layout = QHBoxLayout()
-        self.star_label = [QLabel() for i in range(10)]
+        self.star_label = [construct(QLabel(), 'settings.yaml', 'star_label') for i in range(10)]
         for i in range(10):
-            self.star_label[i].setFrameStyle(QFrame.Box | QFrame.Plain)
-            self.star_label[i].setAlignment(Qt.AlignCenter)
             header_layout.addWidget(self.star_label[i])
         top.setLayout(header_layout)
         ### header ###
 
         ### main ###
         main = QFrame()
-        main.setFrameStyle(QFrame.Box | QFrame.Plain)
+        main.setLineWidth(2)
+        main.setFrameStyle(QFrame.Shape.Box.value | QFrame.Shadow.Plain.value)
         main_layout = QHBoxLayout()
         main_ratio = [2,1,2]
         self.num_label = [QLabel() for i in range(3)]
         for i in range(3):
-            self.num_label[i].setFrameStyle(QFrame.NoFrame)
-            self.num_label[i].setAlignment(Qt.AlignCenter)
             main_layout.addWidget(self.num_label[i], main_ratio[i])
         main.setLayout(main_layout)
-        ### body ###
+        ### main ###
 
         ### footer ###
-        self.timer_label = QLabel()
-        self.timer_label.setFrameStyle(QFrame.Box | QFrame.Plain)
-        self.timer_label.setAlignment(Qt.AlignCenter)
-        self.timer_label.setFont(QFont("Times", 36, QFont.Bold))
+        self.timer_label = construct(QLabel(), 'settings.yaml', 'timer_label')
         ### footer ###
 
         vbox = QVBoxLayout()
@@ -86,16 +77,20 @@ class Window(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.on_timeout)
         
-        self.setLayout(vbox)        
+        self.setLayout(vbox)   
+
+        self.star_image = QImage('./sound/star.png').scaled(self.star_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio)
+        self.num_image = [QImage('./sound/%d.png'%i).scaled(self.num_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio) for i in range(10)]
+        self.plus_image = QImage('./sound/plus.png').scaled(self.num_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio) 
 
         self.show()
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Escape:
+        if e.key() == Qt.Key.Key_Escape:
             self.close()
 
         ### game start ###
-        if e.key() == Qt.Key_Return and self.start_button_ready == True:
+        if e.key() == Qt.Key.Key_Return and self.start_button_ready == True:
             self.start_button_ready = False
             self.num_button_ready = True
             self.ok_count = 0
@@ -109,7 +104,7 @@ class Window(QWidget):
 
             loop = QEventLoop()
             QTimer.singleShot(1000, loop.quit)
-            loop.exec_()
+            loop.exec()
             
             self.startTimer()
             self.make_question()
@@ -123,41 +118,41 @@ class Window(QWidget):
         self.real_answer = self.q1 + self.q2
 
         ### display ###
-        self.set_image_into_label(self.num_pixmap[self.q1], self.num_label[0])
-        self.set_image_into_label(self.plus_pixmap, self.num_label[1])
-        self.set_image_into_label(self.num_pixmap[self.q2], self.num_label[2])
+        self.num_label[0].setPixmap(QPixmap.fromImage(self.num_image[self.q1]))
+        self.num_label[1].setPixmap(QPixmap.fromImage(self.plus_image))
+        self.num_label[2].setPixmap(QPixmap.fromImage(self.num_image[self.q2]))
 
         self.num_button_ready = True
 
     def correct_answer(self):
         self.num_button_ready = False
         self.ok_count += 1
-        self.set_image_into_label(self.donut_pixmap, self.star_label[self.ok_count -1])
+        self.star_label[self.ok_count -1].setPixmap(QPixmap.fromImage(self.star_image))
         if self.ok_count == 10:
             self.now_playing = False
             self.stopTimer()
             player2.play()
             loop = QEventLoop()
             QTimer.singleShot(4000, loop.quit)
-            loop.exec_()
+            loop.exec()
             self.start_button_ready = True
         else:
             player1.play()
             loop = QEventLoop()
             QTimer.singleShot(800, loop.quit)
-            loop.exec_()
+            loop.exec()
             for i in range(3):
                 self.num_label[i].clear()
             loop = QEventLoop()
             QTimer.singleShot(200, loop.quit)
-            loop.exec_()
+            loop.exec()
             self.make_question()
-        
+    '''
     def set_image_into_label(self, image, label):
         w = label.width()
         h = label.height()
         label.setPixmap(image.scaled(w-2, h-2, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-
+    '''
     def startTimer(self):
         self.time1 = QTime.currentTime()
         delta = datetime.timedelta(0)
@@ -172,8 +167,8 @@ class Window(QWidget):
         delta = datetime.timedelta(seconds=time2)
         self.timer_label.setText(str(delta))
 
-app = QApplication(sys.argv)
-ex =Window()
-
-ex.showFullScreen()
-sys.exit(app.exec_())
+if __name__ == "__main__":
+    app = QApplication([])
+    ex =Window()
+    ex.showFullScreen()
+    app.exec()

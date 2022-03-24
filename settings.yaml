@@ -1,0 +1,52 @@
+star_label:
+  type: QLabel
+  linewidth: 2
+  shape: box #(box or panel)
+  shadow: plain #(plain or raised or sunken)
+
+num_label:
+  type: QLabel
+  linewidth: 2
+  shape: box #(box or panel)
+  shadow: raised #(plain or raised or sunken)
+  text: start
+
+timer_label:
+  type: QLabel
+  alignment: center
+  fontFamily: Times
+  fontPoint: 36
+  fontBold: True
+  linewidth: 2
+  shape: box #(box or panel)
+  shadow: plain #(plain or raised or sunken)
+
+
+#label:
+#  type: QLabel
+#  width: 300
+#  height: 100
+#  alignment: center
+#  fontFamily: times
+#  fontPoint: 40
+#  fontBold: True
+#  linewidth: 5
+#  shape: box #(box or panel)
+#  shadow: raised #(plain or raised or sunken)
+#  text: start
+
+#button:
+#  type: QPushButton
+#  width: 200
+#  height: 100
+#  fontFamily: times
+#  fontPoint: 40
+#  fontBold: False
+#  text: start
+
+#slider:
+#  type: QSlider
+#  orientation: h  #(h or v)
+#  max: 100
+#  min: 0
+#  default: 50
