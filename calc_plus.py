@@ -5,7 +5,7 @@ import vlc
 
 from PyQt6.QtCore import Qt, QTime, QTimer, QEventLoop
 from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QPixmap, QFont, QKeySequence, QImage
+from PyQt6.QtGui import QPixmap, QKeySequence
 
 from constructGUI import construct
 
