@@ -49,24 +49,18 @@ class Window(QWidget):
 
 
         ### header ###
-        top = QFrame()
         header_layout = QHBoxLayout()
         self.star_label = [construct(QLabel(), 'settings.yaml', 'star_label') for i in range(10)]
         for i in range(10):
             header_layout.addWidget(self.star_label[i])
-        top.setLayout(header_layout)
         ### header ###
 
         ### main ###
-        main = QFrame()
-        main.setLineWidth(2)
-        main.setFrameStyle(QFrame.Shape.Box.value | QFrame.Shadow.Plain.value)
         main_layout = QHBoxLayout()
         main_ratio = [2,1,2]
         self.num_label = [QLabel() for i in range(3)]
         for i in range(3):
             main_layout.addWidget(self.num_label[i], main_ratio[i])
-        main.setLayout(main_layout)
         ### main ###
 
         ### footer ###
@@ -74,8 +68,8 @@ class Window(QWidget):
         ### footer ###
 
         vbox = QVBoxLayout()
-        vbox.addWidget(top,1)
-        vbox.addWidget(main,5)
+        vbox.addLayout(header_layout,1)
+        vbox.addLayout(main_layout,5)
         vbox.addWidget(self.timer_label,1)
         
         self.timer = QTimer()
