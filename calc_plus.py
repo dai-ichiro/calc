@@ -33,6 +33,9 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+        self.star_image = QPixmap('./sound/star.png')
+        self.num_image = [QPixmap('./sound/%d.png'%i) for i in range(10)]
+        self.plus_image = QPixmap('./sound/plus.png')
         self.question = True
         self.q1 = 0
         self.q2 = 0
@@ -43,6 +46,7 @@ class Window(QWidget):
         self.time1 = None
         
     def initUI(self):
+
 
         ### header ###
         top = QFrame()
@@ -79,10 +83,6 @@ class Window(QWidget):
         
         self.setLayout(vbox)   
 
-        self.star_image = QImage('./sound/star.png').scaled(self.star_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio)
-        self.num_image = [QImage('./sound/%d.png'%i).scaled(self.num_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio) for i in range(10)]
-        self.plus_image = QImage('./sound/plus.png').scaled(self.num_label[0].size(), Qt.AspectRatioMode.KeepAspectRatio) 
-
         self.show()
 
     def keyPressEvent(self, e):
@@ -118,16 +118,17 @@ class Window(QWidget):
         self.real_answer = self.q1 + self.q2
 
         ### display ###
-        self.num_label[0].setPixmap(QPixmap.fromImage(self.num_image[self.q1]))
-        self.num_label[1].setPixmap(QPixmap.fromImage(self.plus_image))
-        self.num_label[2].setPixmap(QPixmap.fromImage(self.num_image[self.q2]))
+        self.set_image_into_label(self.num_image[self.q1], self.num_label[0])
+        self.set_image_into_label(self.plus_image, self.num_label[1])
+        self.set_image_into_label(self.num_image[self.q2], self.num_label[2])
 
         self.num_button_ready = True
 
     def correct_answer(self):
         self.num_button_ready = False
         self.ok_count += 1
-        self.star_label[self.ok_count -1].setPixmap(QPixmap.fromImage(self.star_image))
+        
+        self.set_image_into_label(self.star_image, self.star_label[self.ok_count -1])
         if self.ok_count == 10:
             self.now_playing = False
             self.stopTimer()
@@ -147,12 +148,12 @@ class Window(QWidget):
             QTimer.singleShot(200, loop.quit)
             loop.exec()
             self.make_question()
-    '''
+    
     def set_image_into_label(self, image, label):
         w = label.width()
         h = label.height()
-        label.setPixmap(image.scaled(w-2, h-2, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-    '''
+        label.setPixmap(image.scaled(w-4, h-4, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+    
     def startTimer(self):
         self.time1 = QTime.currentTime()
         delta = datetime.timedelta(0)

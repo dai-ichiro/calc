@@ -1,4 +1,5 @@
 star_label:
+  alignment: center
   type: QLabel
   linewidth: 2
   shape: box #(box or panel)
